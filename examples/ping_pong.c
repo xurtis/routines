@@ -96,7 +96,7 @@ int main(void) {
 	printf("[ROOT] Starting server\n");
 	server.coroutine = routines_spawn(server_task, &server);
 
-	printf("[ROOT] All tasks completed!");
+	printf("[ROOT] All tasks completed!\n");
 
 	routines_destroy(server.coroutine);
 	for (size_t c = 0; c < NUM_CLIENTS; c += 1) {
