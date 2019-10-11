@@ -287,6 +287,7 @@ void routines_suspend(routines_coroutine_t *coroutine) {
 void routines_resume(routines_coroutine_t *coroutine) {
 	assert(coroutine != NULL);
 	assert(coroutine != current_coroutine);
+	assert(coroutine->state != ROUTINES_COMPLETED);
 
 	/* Suspend to remove from ay queues */
 	routines_suspend(coroutine);
