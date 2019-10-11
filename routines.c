@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <setjmp.h>
 #include <stdlib.h>
+#include <sys/mman.h>
 
 #include <routines.h>
 
@@ -518,7 +519,13 @@ static unsigned char *alloc_stack(void) {
 	unsigned char *stack = pop_stack();
 
 	if (stack == NULL) {
-		stack = malloc(STACK_SIZE);
+		stack = mmap(
+			NULL,
+			STACK_SIZE,
+			PROT_READ | PROT_WRITE,
+			MAP_PRIVATE | MAP_ANONYMOUS | MAP_GROWSDOWN | MAP_STACK,
+			0, 0
+		);
 		stack += STACK_SIZE;
 	}
 	return stack;
