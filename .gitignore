@@ -1,0 +1,6 @@
+build/
+examples-bin/
+*.so
+*.a
+*.o
+compile_commands.json
