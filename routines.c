@@ -615,6 +615,7 @@ static void transfer(
 
     if (!jmp_result) {
 		if (current_coroutine != NULL) {
+			assert(current_coroutine->stack_base != NULL);
 			current_coroutine->state = ROUTINES_RUNNING;
         	longjmp(current_coroutine->context, 1);
 		} else {
