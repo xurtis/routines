@@ -200,6 +200,8 @@ routines_coroutine_t *routines_spawn(routines_task_t task, void *arg) {
 		.entrypoint = task,
 		.arg = arg,
 		.stack_base = alloc_stack(),
+		.next = NULL,
+		.prev = NULL,
 	};
 
 	routines_coroutine_t *self = current_coroutine;
@@ -461,11 +463,14 @@ static void coroutine_enqueue(
 	assert(coroutine != NULL);
 	assert(coroutine->next == NULL);
 	assert(coroutine->prev == NULL);
+	assert(coroutine->queue == NULL);
 
 	if (queue->tail != NULL) {
+		assert(queue->tail->next == NULL);
 		coroutine->prev = queue->tail;
 		queue->tail->next = coroutine;
 	} else {
+		assert(queue->head == NULL);
 		queue->head = coroutine;
 	}
 	queue->tail = coroutine;
@@ -480,7 +485,12 @@ static routines_coroutine_t *coroutine_dequeue(
 
 	if (head != NULL) {
 		queue->head = head->next;
+		assert(head->queue == queue);
 		head->queue = NULL;
+		head->next = NULL;
+		if (queue->head != NULL) {
+			queue->head->prev = NULL;
+		}
 	}
 
 	if (queue->head == NULL) {
@@ -638,11 +648,8 @@ static void transfer(
 }
 
 static void routine_entry(routines_coroutine_t *coroutine) {
-	if (current_coroutine != NULL) {
-		coroutine_enqueue(&ready_queue, current_coroutine);
-	}
-
 	current_coroutine = coroutine;
+	coroutine->state = ROUTINES_RUNNING;
 	coroutine->entrypoint(coroutine->arg);
 
 	coroutine_queue_t *join_queue = &coroutine->join_queue;
