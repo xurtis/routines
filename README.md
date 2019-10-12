@@ -204,6 +204,38 @@ Returns the state of the given co-routine as one of the following:
   * `ROUTINES_BLOCKED_JOIN` - the co-routine is blocked waiting for
     another co-routine to complete,
 
+#### `routines_data_set`
+
+```c
+void routines_data_set(routines_coroutine_t *coroutine, void *data);
+```
+
+Associate some user data with a given co-routine.
+
+#### `routines_data`
+
+```c
+void *routines_data(routines_coroutine_t *coroutine);
+```
+
+Get the associated user data for a given co-routine.
+
+#### `routines_self_data_set`
+
+```c
+void routines_self_data_set(void *data);
+```
+
+Set the associated user data for the currently executing co-routine.
+
+#### `routines_self_data`
+
+```c
+void *routines_self_data(void);
+```
+
+Access the associated user data for the currently executing co-routine.
+
 ### Scheduling
 
 #### `routines_yeild`

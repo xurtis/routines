@@ -41,6 +41,22 @@ routines_coroutine_t *routines_self(void);
 /* Get the state of a co-routine */
 routines_state_t routines_state(routines_coroutine_t *coroutine);
 
+/* Associate data with a given routine */
+void routines_data_set(routines_coroutine_t *coroutine, void *data);
+
+/* Get the associated data for a given co-routine */
+void *routines_data(routines_coroutine_t *coroutine);
+
+/* Set the data for the current co-routine */
+static inline void routines_self_data_set(void *data) {
+	routines_data_set(routines_self(), data);
+}
+
+/* Get the data for the curren co-routine */
+static inline void *routines_self_data(void) {
+	return routines_data(routines_self());
+}
+
 /*
  * Yield time to another co-routine
  *

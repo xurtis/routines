@@ -52,6 +52,9 @@ struct routines_coroutine {
 	/* Stack address of co-routine */
 	unsigned char *stack_base;
 
+	/* User-associated data */
+	void *user_data;
+
 	/* Suspended routine context */
 	jmp_buf context;
 	/* Current state of the c-oroutine */
@@ -253,6 +256,20 @@ routines_state_t routines_state(routines_coroutine_t *coroutine) {
 	assert(coroutine != NULL);
 
 	return coroutine->state;
+}
+
+void routines_data_set(routines_coroutine_t *coroutine, void *data) {
+	if (coroutine != NULL) {
+		coroutine->user_data = data;
+	}
+}
+
+void *routines_data(routines_coroutine_t *coroutine) {
+	if (coroutine != NULL) {
+		return coroutine->user_data;
+	} else {
+		return NULL;
+	}
 }
 
 void routines_yield(void) {
