@@ -344,14 +344,12 @@ void *routines_wait(routines_queue_t *queue) {
 }
 
 void routines_signal(routines_queue_t *queue, void *message) {
-	assert(current_coroutine != NULL);
 	assert(queue != NULL);
 
 	send(queue, message, NULL, NULL);
 }
 
 void *routines_read(routines_queue_t *queue) {
-	assert(current_coroutine != NULL);
 	assert(queue != NULL);
 
 	if (pending_messages(queue)) {
