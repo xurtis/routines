@@ -11,8 +11,8 @@
 #include <stdbool.h>
 #include <routines.h>
 
-#define NUM_CLIENTS 2
-#define NUM_PINGS   5
+#define NUM_CLIENTS 10000
+#define NUM_PINGS   50
 
 typedef struct {
 	routines_coroutine_t *coroutine;

@@ -23,7 +23,7 @@ clean:
 	rm -rf examples-bin *.a *.so *.o
 
 routines.o: $(srcdir)/routines.c | $(srcdir)/routines.h
-	$(CC) $(CFLAGS) -fPIC -c -o $@ $^
+	$(CC) $(CFLAGS) -fPIC -c -o $@ $(filter %.c,$^)
 
 libroutines.a: routines.o
 	ar -rcD $@ $^
@@ -32,11 +32,8 @@ libroutines.so: routines.o
 	$(CC) $(CFLAGS) -shared -o $@ $^
 
 # Examples binaries
-examples-bin:
-	mkdir -p $@
-
-examples-bin/%: $(srcdir)/examples/%.c examples-bin libroutines.a
-	$(CC) $(CFLAGS) -o $@ $< -lroutines
+examples/%: $(srcdir)/examples/%.c libroutines.a
+	$(CC) $(CFLAGS) -o $@ $(filter %.c,$^) -lroutines
 
 .PHONY: examples
-examples: $(patsubst examples/%.c,examples-bin/%,$(wildcard examples/*.c))
+examples: $(patsubst %.c,%,$(wildcard examples/*.c))

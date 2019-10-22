@@ -26,7 +26,14 @@
 #define LISTEN_PORT    1234
 #define LISTEN_BACKLOG 128
 
-#define TRY(e) {if (e < 0) { perror(#e); exit(EXIT_FAILURE); }}
+#define TRY(e) { \
+	if (e < 0) { \
+		perror(#e); \
+		exit(-errno); \
+	} else { \
+		errno = 0; \
+	} \
+}
 
 typedef struct server     server_t;
 typedef struct connection connection_t;
@@ -133,6 +140,14 @@ static void server_start(server_t *server) {
 	};
 	server->listen_fd = socket(AF_INET, SOCK_STREAM, 0);
 	TRY(server->listen_fd);
+	int reuseaddr = true;
+	TRY(setsockopt(
+		server->listen_fd,
+		SOL_SOCKET,
+		SO_REUSEADDR,
+		&reuseaddr,
+		sizeof(reuseaddr)
+	));
 	TRY(bind(
 		server->listen_fd,
 		(struct sockaddr *)(&addr),
@@ -153,6 +168,7 @@ static void server_start(server_t *server) {
 static void server_stop(server_t *server) {
 	assert(routines_self() == NULL);
 
+	shutdown(server->listen_fd, SHUT_RDWR);
 	close(server->listen_fd);
 	close(server->epoll_fd);
 	exited_drain(&server->exited);
@@ -238,6 +254,7 @@ static void handle_connection(void *arg) {
 	}
 
 	printf("[CLIENT #%d] Closing\n", connection->fd);
+	shutdown(connection->fd, SHUT_RDWR);
 	close(connection->fd);
 
 	connection_exit(connection);
