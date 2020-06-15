@@ -696,20 +696,19 @@ static inline void call_on_stack(
 #if defined(__x86_64)
     asm volatile (
         "movq %[stack], %%rsp\n"
-        "movq %[args], %%rdi\n"
-        "push %%rbp\n"
-        "push %%rsp\n"
-        "callq *%[cb]\n"
         :
         : [stack] "r" (coroutine->stack_base)
-		, [args] "r" (coroutine)
-		, [cb] "r" (callback)
-        : "rdi", "memory"
+        : "memory"
     );
 #elif defined(__arm__)
 #error "call_on_stack not implemented arm"
 #elif defined(__aarch64__)
-#error "call_on_stack not implemented aarch64"
+    asm volatile (
+        "mov %%sp, %[stack]\n"
+        :
+        : [stack] "r" (coroutine->stack_base)
+        : "memory"
+    );
 #elif defined(__i386)
 #error "call_on_stack not implemented IA-32"
 #elif defined(__riscv)
@@ -717,4 +716,5 @@ static inline void call_on_stack(
 #else
 #error "call_on_stack not implemented for target architecture"
 #endif
+	callback(coroutine);
 }
